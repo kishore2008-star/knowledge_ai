@@ -9,7 +9,6 @@ import {
   ThumbsDown,
   Star,
   FileText,
-  ChevronRight,
   BookOpen
 } from "lucide-react";
 

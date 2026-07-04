@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
-import { Shield, Key, Bell, CreditCard, Laptop } from "lucide-react";
+import { Shield, Key, Laptop } from "lucide-react";
 
 export const Settings: React.FC = () => {
   const { user } = useAuth();

@@ -4,6 +4,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import { logger } from "./config/logger";
+import { prisma } from "./config/db";
 import { errorHandler } from "./middleware/errorHandler";
 import apiRouter from "./routes/api";
 
@@ -48,8 +49,22 @@ app.use((req, res, next) => {
 app.use("/api", apiRouter);
 
 // 7. Health Check
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "healthy", timestamp: new Date() });
+app.get("/health", async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).json({
+      status: "healthy",
+      database: "connected",
+      timestamp: new Date(),
+    });
+  } catch (error: any) {
+    res.status(503).json({
+      status: "degraded",
+      database: "disconnected",
+      error: error.message,
+      timestamp: new Date(),
+    });
+  }
 });
 
 // 8. Global Error Handler

@@ -11,9 +11,7 @@ import {
   Cpu,
   Layers,
   LogOut,
-  Bell,
   Activity,
-  ThumbsUp,
   FolderLock
 } from "lucide-react";
 

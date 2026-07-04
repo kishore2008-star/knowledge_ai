@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Bell, Search, Calendar, ChevronDown, Check } from "lucide-react";
+import { Bell, Calendar, Check } from "lucide-react";
 import api from "../services/api";
 
 export const Navbar: React.FC = () => {

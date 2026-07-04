@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Shield, BrainCircuit, Cpu, Database, ChevronRight, Activity } from "lucide-react";
 
 export const Landing: React.FC = () => {

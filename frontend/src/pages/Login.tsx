@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../services/api";
-import { ShieldAlert, Building, Key, Mail, User } from "lucide-react";
+import { ShieldAlert, Key, Mail } from "lucide-react";
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();

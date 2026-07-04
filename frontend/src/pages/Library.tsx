@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
-import { Search, Filter, Layers, FileText, ChevronRight, BookOpen } from "lucide-react";
+import { Search, Filter, ChevronRight, BookOpen } from "lucide-react";
 
 export const Library: React.FC = () => {
   const [documents, setDocuments] = useState<any[]>([]);

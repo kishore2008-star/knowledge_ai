@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
-import { Check, X, FileText, Calendar, User, Eye, Layers } from "lucide-react";
+import { Check, X, FileText, Calendar, Eye, Layers } from "lucide-react";
 
 export const StagingReviews: React.FC = () => {
   const [documents, setDocuments] = useState<any[]>([]);

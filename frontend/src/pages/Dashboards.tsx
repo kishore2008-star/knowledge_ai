@@ -27,9 +27,7 @@ import {
   Tooltip,
   PieChart,
   Pie,
-  Cell,
-  AreaChart,
-  Area
+  Cell
 } from "recharts";
 
 // Colors for Pie Charts
@@ -248,7 +246,7 @@ export const Dashboards: React.FC = () => {
                         outerRadius={80}
                         fill="#8884d8"
                       >
-                        {data?.departmentCoverage?.map((entry: any, index: number) => (
+                        {data?.departmentCoverage?.map((_entry: any, index: number) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>

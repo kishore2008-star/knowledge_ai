@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
-import { Upload, ChevronRight, CheckCircle, HelpCircle } from "lucide-react";
+import { Upload, CheckCircle, HelpCircle } from "lucide-react";
 
 export const UploadDoc: React.FC = () => {
   const [departments, setDepartments] = useState<any[]>([]);
