@@ -1,0 +1,236 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  EXPERT
+  EMPLOYEE
+}
+
+enum IngestionStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum DocumentStage {
+  STAGING
+  PRODUCTION
+}
+
+model Company {
+  id             String       @id @default(uuid()) @db.Uuid
+  name           String
+  logoUrl        String?
+  industry       String?
+  address        String?
+  country        String?
+  timezone       String       @default("UTC")
+  subscription   String       @default("Standard")
+  storageLimitGb Float        @default(10.0)
+  userLimit      Int          @default(50)
+  isDeleted      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  users          User[]
+  departments    Department[]
+}
+
+model Department {
+  id        String     @id @default(uuid()) @db.Uuid
+  name      String
+  companyId String     @db.Uuid
+  isDeleted Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  users     User[]
+  machines  Machine[]
+  documents Document[]
+}
+
+model User {
+  id           String       @id @default(uuid()) @db.Uuid
+  email        String       @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         Role         @default(EMPLOYEE)
+  isActive     Boolean      @default(true)
+  companyId    String       @db.Uuid
+  departmentId String?      @db.Uuid
+  isDeleted    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  department   Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  sessions     Session[]
+  tokens       RefreshToken[]
+  feedbacks    Feedback[]
+  chats        ChatSession[]
+  auditLogs    AuditLog[]
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Machine {
+  id           String     @id @default(uuid()) @db.Uuid
+  machineId    String     @unique
+  name         String
+  location     String?
+  manufacturer String?
+  description  String?
+  images       String[]
+  status       String     @default("ACTIVE")
+  departmentId String     @db.Uuid
+  isDeleted    Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  documents    Document[]
+}
+
+model Document {
+  id           String          @id @default(uuid()) @db.Uuid
+  title        String
+  description  String?
+  stage        DocumentStage   @default(STAGING)
+  status       IngestionStatus @default(PROCESSING)
+  tags         String[]
+  departmentId String          @db.Uuid
+  machineId    String?         @db.Uuid
+  isDeleted    Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  department   Department      @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  machine      Machine?        @relation(fields: [machineId], references: [id], onDelete: SetNull)
+  versions     DocumentVersion[]
+  feedbacks    Feedback[]
+}
+
+model DocumentVersion {
+  id           String   @id @default(uuid()) @db.Uuid
+  documentId   String   @db.Uuid
+  version      String
+  fileUrl      String
+  fileName     String
+  fileType     String
+  fileSize     Int
+  summary      String?
+  keywords     String[]
+  authorId     String?  @db.Uuid
+  approvedById String?  @db.Uuid
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  document     Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunks       DocumentChunk[]
+}
+
+model DocumentChunk {
+  id         String          @id @default(uuid()) @db.Uuid
+  versionId  String          @db.Uuid
+  content    String
+  sequence   Int
+  createdAt  DateTime        @default(now())
+
+  version    DocumentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  embeddings Embedding[]
+}
+
+model Embedding {
+  id        String        @id @default(uuid()) @db.Uuid
+  chunkId   String        @db.Uuid
+  embedding Unsupported("vector(1536)")
+  createdAt DateTime      @default(now())
+
+  chunk     DocumentChunk @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+}
+
+model Feedback {
+  id         String   @id @default(uuid()) @db.Uuid
+  rating     Int
+  isHelpful  Boolean
+  comment    String?
+  documentId String   @db.Uuid
+  userId     String   @db.Uuid
+  createdAt  DateTime @default(now())
+
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ChatSession {
+  id        String        @id @default(uuid()) @db.Uuid
+  userId    String        @db.Uuid
+  title     String        @default("New Chat")
+  isDeleted Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+}
+
+model ChatMessage {
+  id        String      @id @default(uuid()) @db.Uuid
+  sessionId String      @db.Uuid
+  sender    String      @default("USER") // USER, AI
+  message   String
+  metadata  Json?       // To store references, confidence, etc.
+  createdAt DateTime    @default(now())
+
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  action    String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
