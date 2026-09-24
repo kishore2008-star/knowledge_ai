@@ -22,34 +22,6 @@ The easiest way to spin up the local development environment (including PostgreS
 
 ## 📂 Core Folder Structure
 
-```
-├── backend/
-│   ├── prisma/             # Schema definitions and database migrations
-│   ├── src/
-│   │   ├── config/         # Winston logger, Prisma initialization
-│   │   ├── controllers/    # API controllers (auth, machines, documents, chat)
-│   │   ├── middleware/     # JWT authentication, error handling, rate limiting
-│   │   ├── routes/         # Express endpoint mappings
-│   │   ├── services/       # AI Pipelines, vector similarity search, RAG logic
-│   │   └── server.ts       # Express server initialization
-│   ├── tsconfig.json
-│   └── Dockerfile
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # Layouts, Sidebar, Navbar
-│   │   ├── context/        # Auth state management
-│   │   ├── pages/          # Landing, Login, Dashboards, AIChat, Uploads, Staging
-│   │   ├── services/       # Axios API client
-│   │   ├── main.tsx        # React 19 entrypoint
-│   │   └── index.css       # Tailwind CSS custom parameters
-│   ├── tailwind.config.js
-│   ├── vite.config.ts
-│   └── Dockerfile
-│
-└── docker-compose.yml       # Standard Postgres (pgvector) + Backend + Frontend
-```
-
 ---
 
 ## ⚙️ Environment Variables (`.env`)
