@@ -1,8 +1,4 @@
-# KnowForge AI — Enterprise Multi-Tenant AI Knowledge Management Platform
 
-KnowForge AI is a multi-tenant operational knowledge management system designed for industrial, production, and maintenance contexts. It processes operational manuals, safety SOPs, and troubleshooting records through an automated AI pipeline (parsing, transcribing, chunking, and embedding) and exposes a verified RAG chat search assistant.
-
----
 
 ## ⚡ Quick Start (Docker Compose)
 
